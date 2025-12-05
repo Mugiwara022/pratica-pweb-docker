@@ -13,11 +13,16 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@supabase/supabase-js": "^2.86.2",
+    "bcrypt": "^6.0.0",
     "cors": "^2.8.5",
     "dotenv": "^17.2.3",
     "express": "^4.21.2",
+    "jsonwebtoken": "^9.0.3",
+    "multer": "^2.0.2",
     "pg": "^8.16.3",
     "pg-hstore": "^2.3.4",
+    "redis": "^5.10.0",
     "sequelize": "^6.37.7",
     "uuid": "^13.0.0"
   },
