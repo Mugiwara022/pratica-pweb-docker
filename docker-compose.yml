@@ -16,11 +16,20 @@ services:
     networks:
       - todo-pweb-network
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres -d postgres"]
+      test: ["CMD-SHELL", "pg_isready -U postgres -d todolist"]
       interval: 5s
       timeout: 5s
       retries: 10
       start_period: 10s
+
+  # Serviço do Redis (Cache)
+  redis-pweb:
+    image: redis:alpine
+    container_name: redis-pweb
+    networks:
+      - todo-pweb-network
+    ports:
+      - "6379:6379"
 
   # Backend API
   backend-pweb:
@@ -31,21 +40,33 @@ services:
     environment:
       NODE_ENV: production
       PORT: 3000
+      # Banco de Dados
       DB_HOST: db-pweb
       DB_PORT: 5432
       DB_USER: postgres
       DB_PASSWORD: postgres
       DB_NAME: todolist
+      # CONFIGURAÇÃO DO REDIS (O que estava faltando)
+      REDIS_HOST: redis-pweb
+      REDIS_PORT: 6379
+      # Autenticação (JWT)
+      JWT_SECRET: mudesecretoparaalgoaleatorio
+      # Supabase Storage
+      SUPABASE_URL: coloque_sua_url_aqui
+      SUPABASE_KEY: coloque_sua_chave_aqui
+      SUPABASE_BUCKET: avatars
     ports:
       - "3000:3000"
     depends_on:
       db-pweb:
         condition: service_healthy
+      redis-pweb:
+        condition: service_started
     networks:
       - todo-pweb-network
     restart: unless-stopped
 
-  # Frontend (Build e serve com Nginx)
+  # Frontend
   frontend-pweb:
     build:
       context: ./frontend
